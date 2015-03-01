@@ -1,0 +1,55 @@
+{
+    "appKeys": {},
+    "capabilities": [
+        ""
+    ],
+    "companyName": "auruspex",
+    "longName": "HostDime",
+    "projectType": "native",
+    "resources": {
+        "media": [
+            {
+                "file": "images/bt_bad-bw.png",
+                "name": "BT_BAD",
+                "type": "png"
+            },
+            {
+                "file": "images/bt_good-bw.png",
+                "name": "BT_GOOD",
+                "type": "png"
+            },
+            {
+                "file": "images/battery_body.png",
+                "name": "BATTERY_BODY",
+                "type": "png"
+            },
+            {
+                "file": "fonts/Ubuntu-B.ttf",
+                "name": "FONT_UBUNTU_BOLD_18",
+                "type": "font"
+            },
+            {
+                "characterRegex": "[0-9:.]",
+                "file": "fonts/Ubuntu-R.ttf",
+                "name": "FONT_UBUNTU_REGULAR_36",
+                "type": "font"
+            },
+            {
+                "file": "images/pebble_logo.png",
+                "name": "LOGO",
+                "type": "png"
+            }
+        ]
+    },
+    "sdkVersion": "3",
+    "shortName": "HostDime",
+    "targetPlatforms": [
+        "basalt"
+    ],
+    "uuid": "1733b8f4-b409-4a11-8323-b870834a24d5",
+    "versionCode": 1,
+    "versionLabel": "1.0",
+    "watchapp": {
+        "watchface": false
+    }
+}
