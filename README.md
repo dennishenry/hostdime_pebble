@@ -2,16 +2,17 @@
 
 This repository houses the HostDime Pebble Watchface, written in SDK 3.0 and optimized for Pebble Time.
 
-![Current Watchface - 03.01.15](http://i.imgur.com/TSUlVJK.png)
+![Current Watchface - 03.02.15](http://i.imgur.com/e3IA9dl.png)
 
 Currently it displays:
 
 * Time - Respectful of 12/24 hour time selection
 * Date - Using shorthand (ie. MON 01 JAN)
-* Battery Percentage - Properly updated on battery tick
+* Battery Percentage - Properly updated on battery tick - color changes as battery fills or depletes
 * Weather - Current Condition and Temperature in Imperial Units
+* Bluetooth Status - Weather Condition changes if BT connection is lost
+* Charging Status - Charging idicator shows when watch is plugged in
 
 Todo:
 
-* Readd bluetooth status with changing the image at the top left
 * Add configuration for weather so the user can choose Imperial or Metric
