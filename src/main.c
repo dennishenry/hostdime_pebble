@@ -7,6 +7,7 @@
 static Window *s_main_window;
 static GBitmap *s_bitmap;
 static GBitmap *battery_charge_image;
+static GBitmap *battery_charging_image;
 static GBitmap *wt_none;
 static GBitmap *wt_fog;
 static GBitmap *wt_rain;
@@ -21,12 +22,14 @@ static TextLayer *s_date_layer;
 static TextLayer *s_temp_layer;
 static BitmapLayer *s_bitmap_layer;
 static BitmapLayer *battery_charge_image_layer;
+static BitmapLayer *battery_charging_image_layer;
 static BitmapLayer *wt_condition;
 static GFont s_time_font;
 static GFont s_date_font;
 static GFont s_temp_font;
 static BatteryChargeState old_charge_state;
 static Layer *battery_status_layer;
+static Layer *battery_charging_layer;
 
 char *upcase(char *str) {
 	
@@ -49,9 +52,31 @@ void update_battery_display(BatteryChargeState charge_state) {
 
 void battery_status_layer_update(Layer* layer, GContext* ctx) {
 
-	graphics_context_set_fill_color(ctx, GColorScreaminGreen);
-	graphics_fill_rect(ctx, GRect(0, 0, old_charge_state.charge_percent*14/100, 5), 0, 0);
+	if (old_charge_state.charge_percent > 60) {
+		graphics_context_set_fill_color(ctx, GColorScreaminGreen);
+		graphics_fill_rect(ctx, GRect(0, 0, old_charge_state.charge_percent*14/100, 5), 0, 0);
+	} else if (old_charge_state.charge_percent > 30) {
+		graphics_context_set_fill_color(ctx, GColorYellow);
+		graphics_fill_rect(ctx, GRect(0, 0, old_charge_state.charge_percent*14/100, 5), 0, 0);
+	} else {
+		graphics_context_set_fill_color(ctx, GColorRed);
+		graphics_fill_rect(ctx, GRect(0, 0, old_charge_state.charge_percent*14/100, 5), 0, 0);		
+	}
+	
+	if (old_charge_state.is_charging) {
+		APP_LOG(APP_LOG_LEVEL_ERROR, "Battery is now charging");
+		layer_set_hidden(bitmap_layer_get_layer(battery_charging_image_layer), false);
+	} else {
+		APP_LOG(APP_LOG_LEVEL_ERROR, "Battery is now discharging");
+		layer_set_hidden(bitmap_layer_get_layer(battery_charging_image_layer), true);
+	}
 
+}
+
+static void bt_handler(bool connected) {
+	if (!connected) {
+		bitmap_layer_set_bitmap(wt_condition, wt_none);
+	}
 }
 
 static void update_time() {
@@ -134,6 +159,16 @@ static void main_window_load(Window *window) {
 	layer_add_child(window_get_root_layer(window), battery_status_layer);
 	layer_set_update_proc(battery_status_layer, battery_status_layer_update);
 
+	// Battery Charging Plug
+	battery_charging_image = gbitmap_create_with_resource(RESOURCE_ID_BATTERY_CHARGING);
+	
+	battery_charging_image_layer = bitmap_layer_create(GRect(107, 9, 10, 11));
+	bitmap_layer_set_bitmap(battery_charging_image_layer, battery_charging_image);
+	bitmap_layer_set_alignment(battery_charging_image_layer, GAlignCenter);
+	bitmap_layer_set_compositing_mode(battery_charging_image_layer, GCompOpSet);
+	layer_set_hidden(bitmap_layer_get_layer(battery_charging_image_layer), true);
+	layer_add_child(window_layer, bitmap_layer_get_layer(battery_charging_image_layer));
+	
 	// Weather
 	wt_none = gbitmap_create_with_resource(RESOURCE_ID_DISCONNECT);
 	wt_fog = gbitmap_create_with_resource(RESOURCE_ID_WEATHER_FOG);
@@ -162,6 +197,9 @@ static void main_window_load(Window *window) {
 	s_temp_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_UBUNTU_BOLD_14));
 	text_layer_set_font(s_temp_layer, s_temp_font);
 	layer_add_child(window_layer, text_layer_get_layer(s_temp_layer));
+	
+	// Bluetooth Status
+	bt_handler(bluetooth_connection_service_peek());
 		
 }
 
@@ -169,16 +207,19 @@ static void main_window_unload(Window *window) {
 	
 	// Destroy layers.
 	layer_destroy(battery_status_layer);
+	layer_destroy(battery_charging_layer);
 	text_layer_destroy(s_time_layer);
 	text_layer_destroy(s_date_layer);
 	text_layer_destroy(s_temp_layer);
 	bitmap_layer_destroy(s_bitmap_layer);
 	bitmap_layer_destroy(battery_charge_image_layer);
+	bitmap_layer_destroy(battery_charging_image_layer);
 	bitmap_layer_destroy(wt_condition);
 	
 	// Destroy bitmaps
 	gbitmap_destroy(s_bitmap);
 	gbitmap_destroy(battery_charge_image);
+	gbitmap_destroy(battery_charging_image);
 	gbitmap_destroy(wt_none);
 	gbitmap_destroy(wt_fog);
 	gbitmap_destroy(wt_rain);
@@ -300,9 +341,10 @@ static void init() {
 	window_stack_push(s_main_window, true);
 	update_battery_display(battery_state_service_peek());
 
-	// Subscribe to battery and time updates.
+	// Subscribe to bluetooth, battery, and time updates.
 	tick_timer_service_subscribe(MINUTE_UNIT, tick_handler);
 	battery_state_service_subscribe(update_battery_display);
+	bluetooth_connection_service_subscribe(bt_handler);
 	
 	// Register callbacks
 	app_message_register_inbox_received(inbox_received_callback);

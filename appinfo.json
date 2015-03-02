@@ -12,6 +12,11 @@
     "resources": {
         "media": [
             {
+                "file": "images/battery_charging-bw.png",
+                "name": "BATTERY_CHARGING",
+                "type": "png"
+            },
+            {
                 "file": "images/cloud_bw.png",
                 "name": "WEATHER_CLOUD",
                 "type": "png"
@@ -60,16 +65,6 @@
             {
                 "file": "images/disconnect.png",
                 "name": "DISCONNECT",
-                "type": "png"
-            },
-            {
-                "file": "images/bt_bad-bw.png",
-                "name": "BT_BAD",
-                "type": "png"
-            },
-            {
-                "file": "images/bt_good-bw.png",
-                "name": "BT_GOOD",
                 "type": "png"
             },
             {
