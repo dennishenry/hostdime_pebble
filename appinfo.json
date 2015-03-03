@@ -12,6 +12,11 @@
     "resources": {
         "media": [
             {
+                "file": "images/pebble_logo_bw2.png",
+                "name": "HD_LOGO",
+                "type": "png"
+            },
+            {
                 "file": "images/battery_charging-bw.png",
                 "name": "BATTERY_CHARGING",
                 "type": "png"
@@ -81,11 +86,6 @@
                 "file": "fonts/Ubuntu-B.ttf",
                 "name": "FONT_UBUNTU_BOLD_18",
                 "type": "font"
-            },
-            {
-                "file": "images/pebble_logo.png",
-                "name": "LOGO",
-                "type": "png"
             }
         ]
     },

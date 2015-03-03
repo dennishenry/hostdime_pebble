@@ -114,7 +114,7 @@ static void main_window_load(Window *window) {
 	Layer *window_layer = window_get_root_layer(window);
 
 	// Create Logo Layer
-	s_bitmap = gbitmap_create_with_resource(RESOURCE_ID_LOGO);
+	s_bitmap = gbitmap_create_with_resource(RESOURCE_ID_HD_LOGO);
 
 	s_bitmap_layer = bitmap_layer_create(GRect(0, 28, 144, 68));
 	bitmap_layer_set_bitmap(s_bitmap_layer, s_bitmap);
@@ -362,7 +362,7 @@ static void init() {
 	s_main_window = window_create();
 	window_set_fullscreen(s_main_window, true);
 	#ifdef PBL_COLOR
-		window_set_background_color(s_main_window, GColorLightGray);
+		window_set_background_color(s_main_window, GColorBlack);
 	#else
 		window_set_background_color(s_main_window, GColorWhite);
 	#endif
