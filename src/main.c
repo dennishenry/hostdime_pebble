@@ -64,7 +64,7 @@ void battery_status_layer_update(Layer* layer, GContext* ctx) {
 			graphics_fill_rect(ctx, GRect(0, 0, old_charge_state.charge_percent*14/100, 5), 0, 0);
 		}
 	#else
-		graphics_context_set_fill_color(ctx, GColorBlack);
+		graphics_context_set_fill_color(ctx, GColorWhite);
 		graphics_fill_rect(ctx, GRect(0, 0, old_charge_state.charge_percent*14/100, 5), 0, 0);
 	#endif
 
@@ -129,11 +129,7 @@ static void main_window_load(Window *window) {
 	// Time
 	s_time_layer = text_layer_create(GRect(0, 100, 144, 50));
 	text_layer_set_background_color(s_time_layer, GColorClear);
-	#ifdef PBL_COLOR
-		text_layer_set_text_color(s_time_layer, GColorWhite);
-	#else
-		text_layer_set_text_color(s_time_layer, GColorBlack);
-	#endif
+	text_layer_set_text_color(s_time_layer, GColorWhite);
 	text_layer_set_text(s_time_layer, "00:00");
 
 	s_time_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_UBUNTU_REGULAR_36));
@@ -146,11 +142,7 @@ static void main_window_load(Window *window) {
 	// Date
 	s_date_layer = text_layer_create(GRect(0, 136, 144, 25));
 	text_layer_set_background_color(s_date_layer, GColorClear);
-	#ifdef PBL_COLOR
-		text_layer_set_text_color(s_date_layer, GColorWhite);
-	#else
-		text_layer_set_text_color(s_date_layer, GColorBlack);
-	#endif
+	text_layer_set_text_color(s_date_layer, GColorWhite);
 	text_layer_set_text(s_date_layer, "MON 01 JAN");
 
 	s_date_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_UBUNTU_BOLD_18));
@@ -216,11 +208,7 @@ static void main_window_load(Window *window) {
 	// Temperature
 	s_temp_layer = text_layer_create(GRect(25, 6, 40, 25));
 	text_layer_set_background_color(s_temp_layer, GColorClear);
-	#ifdef PBL_COLOR
-		text_layer_set_text_color(s_temp_layer, GColorWhite);
-	#else
-		text_layer_set_text_color(s_temp_layer, GColorBlack);
-	#endif
+	text_layer_set_text_color(s_temp_layer, GColorWhite);
 	text_layer_set_text_alignment(s_temp_layer, GTextAlignmentLeft);
 	text_layer_set_text(s_temp_layer, "0\u00B0");
 
@@ -361,11 +349,7 @@ static void init() {
 
 	s_main_window = window_create();
 	window_set_fullscreen(s_main_window, true);
-	#ifdef PBL_COLOR
-		window_set_background_color(s_main_window, GColorBlack);
-	#else
-		window_set_background_color(s_main_window, GColorWhite);
-	#endif
+	window_set_background_color(s_main_window, GColorBlack);
 	window_set_window_handlers(s_main_window, (WindowHandlers) {
     	.load = main_window_load,
     	.unload = main_window_unload,
