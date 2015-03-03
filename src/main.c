@@ -32,7 +32,7 @@ static Layer *battery_status_layer;
 static Layer *battery_charging_layer;
 
 char *upcase(char *str) {
-	
+
     char *s = str;
 
     while (*s) {
@@ -40,7 +40,7 @@ char *upcase(char *str) {
     }
 
     return str;
-	
+
 }
 
 void update_battery_display(BatteryChargeState charge_state) {
@@ -51,7 +51,7 @@ void update_battery_display(BatteryChargeState charge_state) {
 }
 
 void battery_status_layer_update(Layer* layer, GContext* ctx) {
-	
+
 	#ifdef PBL_COLOR
 		if (old_charge_state.charge_percent > 60) {
 			graphics_context_set_fill_color(ctx, GColorScreaminGreen);
@@ -61,13 +61,13 @@ void battery_status_layer_update(Layer* layer, GContext* ctx) {
 			graphics_fill_rect(ctx, GRect(0, 0, old_charge_state.charge_percent*14/100, 5), 0, 0);
 		} else {
 			graphics_context_set_fill_color(ctx, GColorRed);
-			graphics_fill_rect(ctx, GRect(0, 0, old_charge_state.charge_percent*14/100, 5), 0, 0);		
+			graphics_fill_rect(ctx, GRect(0, 0, old_charge_state.charge_percent*14/100, 5), 0, 0);
 		}
 	#else
 		graphics_context_set_fill_color(ctx, GColorBlack);
 		graphics_fill_rect(ctx, GRect(0, 0, old_charge_state.charge_percent*14/100, 5), 0, 0);
 	#endif
-	
+
 	if (old_charge_state.is_charging) {
 		layer_set_hidden(bitmap_layer_get_layer(battery_charging_image_layer), false);
 	} else {
@@ -85,13 +85,13 @@ static void bt_handler(bool connected) {
 static void update_time() {
 
 	// Get a tm structure
-	time_t temp = time(NULL); 
+	time_t temp = time(NULL);
 	struct tm *tick_time = localtime(&temp);
- 
+
 	// Create a long-lived buffer
 	static char buffer[] = "00:00";
 	static char date[] = "MON 01 JAN";
- 
+
 	// Write the current hours and minutes into the buffer
 	if (clock_is_24h_style() == true) {
 		// Use 24 hour format
@@ -100,17 +100,17 @@ static void update_time() {
 		// Use 12 hour format
 		strftime(buffer, sizeof("00:00"), "%I:%M", tick_time);
 	}
-	
+
 	strftime(date, sizeof("MON 01 JAN"), "%a %e %b", tick_time);
- 
+
 	// Display this time on the TextLayer
 	text_layer_set_text(s_time_layer, buffer);
 	text_layer_set_text(s_date_layer, upcase(date));
-	
+
 }
 
 static void main_window_load(Window *window) {
-	
+
 	Layer *window_layer = window_get_root_layer(window);
 
 	// Create Logo Layer
@@ -130,7 +130,7 @@ static void main_window_load(Window *window) {
 	s_time_layer = text_layer_create(GRect(0, 100, 144, 50));
 	text_layer_set_background_color(s_time_layer, GColorClear);
 	#ifdef PBL_COLOR
-		text_layer_set_text_color(s_time_layer, GColorDarkGray);
+		text_layer_set_text_color(s_time_layer, GColorWhite);
 	#else
 		text_layer_set_text_color(s_time_layer, GColorBlack);
 	#endif
@@ -147,7 +147,7 @@ static void main_window_load(Window *window) {
 	s_date_layer = text_layer_create(GRect(0, 136, 144, 25));
 	text_layer_set_background_color(s_date_layer, GColorClear);
 	#ifdef PBL_COLOR
-		text_layer_set_text_color(s_date_layer, GColorDarkGray);
+		text_layer_set_text_color(s_date_layer, GColorWhite);
 	#else
 		text_layer_set_text_color(s_date_layer, GColorBlack);
 	#endif
@@ -162,7 +162,7 @@ static void main_window_load(Window *window) {
 
 	// Battery Body
 	battery_charge_image = gbitmap_create_with_resource(RESOURCE_ID_BATTERY_BODY);
-	
+
 	battery_charge_image_layer = bitmap_layer_create(GRect(119, 10, 19, 9));
 	bitmap_layer_set_bitmap(battery_charge_image_layer, battery_charge_image);
 	#ifdef PBL_COLOR
@@ -180,7 +180,7 @@ static void main_window_load(Window *window) {
 
 	// Battery Charging Plug
 	battery_charging_image = gbitmap_create_with_resource(RESOURCE_ID_BATTERY_CHARGING);
-	
+
 	battery_charging_image_layer = bitmap_layer_create(GRect(107, 9, 10, 11));
 	bitmap_layer_set_bitmap(battery_charging_image_layer, battery_charging_image);
 	bitmap_layer_set_alignment(battery_charging_image_layer, GAlignCenter);
@@ -188,10 +188,10 @@ static void main_window_load(Window *window) {
 		bitmap_layer_set_compositing_mode(battery_charging_image_layer, GCompOpSet);
 	#else
 		bitmap_layer_set_compositing_mode(battery_charging_image_layer, GCompOpAssign);
-	#endif	
+	#endif
 	layer_set_hidden(bitmap_layer_get_layer(battery_charging_image_layer), true);
 	layer_add_child(window_layer, bitmap_layer_get_layer(battery_charging_image_layer));
-	
+
 	// Weather
 	wt_none = gbitmap_create_with_resource(RESOURCE_ID_DISCONNECT);
 	wt_fog = gbitmap_create_with_resource(RESOURCE_ID_WEATHER_FOG);
@@ -201,7 +201,7 @@ static void main_window_load(Window *window) {
 	wt_partly = gbitmap_create_with_resource(RESOURCE_ID_WEATHER_PARTLY_CLOUDY);
 	wt_sun = gbitmap_create_with_resource(RESOURCE_ID_WEATHER_SUN);
 	wt_thunder = gbitmap_create_with_resource(RESOURCE_ID_WEATHER_THUNDER);
-	wt_wind = gbitmap_create_with_resource(RESOURCE_ID_WEATHER_WIND);	
+	wt_wind = gbitmap_create_with_resource(RESOURCE_ID_WEATHER_WIND);
 
 	wt_condition = bitmap_layer_create(GRect(5, 6, 18, 18));
 	bitmap_layer_set_bitmap(wt_condition, wt_none);
@@ -209,15 +209,15 @@ static void main_window_load(Window *window) {
 		bitmap_layer_set_compositing_mode(wt_condition, GCompOpSet);
 	#else
 		bitmap_layer_set_compositing_mode(wt_condition, GCompOpAssign);
-	#endif	
+	#endif
 	bitmap_layer_set_alignment(wt_condition, GAlignCenter);
 	layer_add_child(window_layer, bitmap_layer_get_layer(wt_condition));
-	
+
 	// Temperature
 	s_temp_layer = text_layer_create(GRect(25, 6, 40, 25));
 	text_layer_set_background_color(s_temp_layer, GColorClear);
 	#ifdef PBL_COLOR
-		text_layer_set_text_color(s_temp_layer, GColorDarkGray);
+		text_layer_set_text_color(s_temp_layer, GColorWhite);
 	#else
 		text_layer_set_text_color(s_temp_layer, GColorBlack);
 	#endif
@@ -228,14 +228,14 @@ static void main_window_load(Window *window) {
 	s_temp_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_UBUNTU_BOLD_14));
 	text_layer_set_font(s_temp_layer, s_temp_font);
 	layer_add_child(window_layer, text_layer_get_layer(s_temp_layer));
-	
+
 	// Bluetooth Status
 	bt_handler(bluetooth_connection_service_peek());
-		
+
 }
 
 static void main_window_unload(Window *window) {
-	
+
 	// Destroy layers.
 	layer_destroy(battery_status_layer);
 	layer_destroy(battery_charging_layer);
@@ -246,7 +246,7 @@ static void main_window_unload(Window *window) {
 	bitmap_layer_destroy(battery_charge_image_layer);
 	bitmap_layer_destroy(battery_charging_image_layer);
 	bitmap_layer_destroy(wt_condition);
-	
+
 	// Destroy bitmaps
 	gbitmap_destroy(s_bitmap);
 	gbitmap_destroy(battery_charge_image);
@@ -268,9 +268,9 @@ static void main_window_unload(Window *window) {
 }
 
 static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
-	
+
 	update_time();
-	
+
 	// Get weather update every 30 minutes
 	if(tick_time->tm_min % 30 == 0) {
 		// Begin dictionary
@@ -287,7 +287,7 @@ static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
 }
 
 static void inbox_received_callback(DictionaryIterator *iterator, void *context) {
-	
+
 	// Store incoming information
 	static char temperature_buffer[8];
 	static int conditions_buffer;
@@ -318,7 +318,7 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
 	// Display Temperature
 	snprintf(weather_layer_buffer, sizeof(weather_layer_buffer), "%s", temperature_buffer);
 	text_layer_set_text(s_temp_layer, weather_layer_buffer);
-		
+
 	if (conditions_buffer >= 200 && conditions_buffer < 300) { // Thunderstorm
 		bitmap_layer_set_bitmap(wt_condition, wt_thunder);
 	} else if (conditions_buffer >= 300 && conditions_buffer < 600) { // Rainy
@@ -336,25 +336,25 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
 	} else { // Disconnected
 		bitmap_layer_set_bitmap(wt_condition, wt_none);
 	}
-	
+
 }
- 
+
 static void inbox_dropped_callback(AppMessageResult reason, void *context) {
-	
+
 	APP_LOG(APP_LOG_LEVEL_ERROR, "Message dropped!");
-	
+
 }
- 
+
 static void outbox_failed_callback(DictionaryIterator *iterator, AppMessageResult reason, void *context) {
-	
+
 	APP_LOG(APP_LOG_LEVEL_ERROR, "Outbox send failed!");
-	
+
 }
- 
+
 static void outbox_sent_callback(DictionaryIterator *iterator, void *context) {
-	
+
 	APP_LOG(APP_LOG_LEVEL_INFO, "Outbox send success!");
-	
+
 }
 
 static void init() {
@@ -370,7 +370,7 @@ static void init() {
     	.load = main_window_load,
     	.unload = main_window_unload,
 	});
-	
+
 	window_stack_push(s_main_window, true);
 	update_battery_display(battery_state_service_peek());
 
@@ -378,7 +378,7 @@ static void init() {
 	tick_timer_service_subscribe(MINUTE_UNIT, tick_handler);
 	battery_state_service_subscribe(update_battery_display);
 	bluetooth_connection_service_subscribe(bt_handler);
-	
+
 	// Register callbacks
 	app_message_register_inbox_received(inbox_received_callback);
 	app_message_register_inbox_dropped(inbox_dropped_callback);
@@ -391,7 +391,7 @@ static void init() {
 }
 
 static void deinit() {
-	
+
 	window_destroy(s_main_window);
 
 }
