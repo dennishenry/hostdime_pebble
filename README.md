@@ -2,7 +2,7 @@
 
 This repository houses the HostDime Pebble Watchface, written in SDK 3.0 and optimized for Pebble Time.
 
-![Current Watchface - 03.02.15](http://i.imgur.com/e3IA9dl.png)
+![Current Watchface - 03.03.15](https://raw.githubusercontent.com/dennishenry/hostdime_pebble/master/screenshots/hd_pebble-030315.png)
 
 Currently it displays:
 
