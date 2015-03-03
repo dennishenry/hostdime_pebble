@@ -127,12 +127,12 @@ static void main_window_load(Window *window) {
 	layer_add_child(window_layer, bitmap_layer_get_layer(s_bitmap_layer));
 
 	// Time
-	s_time_layer = text_layer_create(GRect(0, 100, 144, 50));
+	s_time_layer = text_layer_create(GRect(0, 95, 144, 50));
 	text_layer_set_background_color(s_time_layer, GColorClear);
 	text_layer_set_text_color(s_time_layer, GColorWhite);
 	text_layer_set_text(s_time_layer, "00:00");
 
-	s_time_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_UBUNTU_REGULAR_36));
+	s_time_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_UBUNTU_REGULAR_42));
 
 	text_layer_set_font(s_time_layer, s_time_font);
 	text_layer_set_text_alignment(s_time_layer, GTextAlignmentCenter);
@@ -142,7 +142,11 @@ static void main_window_load(Window *window) {
 	// Date
 	s_date_layer = text_layer_create(GRect(0, 140, 144, 25));
 	text_layer_set_background_color(s_date_layer, GColorClear);
-	text_layer_set_text_color(s_date_layer, GColorWhite);
+	#ifdef PBL_COLOR
+		text_layer_set_text_color(s_date_layer, GColorOrange);
+	#else
+		text_layer_set_text_color(s_date_layer, GColorWhite);
+	#endif
 	text_layer_set_text(s_date_layer, "MON 01 JAN");
 
 	s_date_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_UBUNTU_BOLD_14));

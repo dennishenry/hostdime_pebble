@@ -14,17 +14,12 @@
             {
                 "characterRegex": "[0-9.:]",
                 "file": "fonts/Ubuntu-R.ttf",
-                "name": "FONT_UBUNTU_REGULAR_36",
+                "name": "FONT_UBUNTU_REGULAR_42",
                 "type": "font"
             },
             {
                 "file": "fonts/Ubuntu-B.ttf",
                 "name": "FONT_UBUNTU_BOLD_14",
-                "type": "font"
-            },
-            {
-                "file": "fonts/Ubuntu-B.ttf",
-                "name": "FONT_UBUNTU_BOLD_18",
                 "type": "font"
             },
             {
