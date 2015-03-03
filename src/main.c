@@ -5,31 +5,13 @@
 #define KEY_CONDITIONS 1
 
 static Window *s_main_window;
-static GBitmap *s_bitmap;
-static GBitmap *battery_charge_image;
-static GBitmap *battery_charging_image;
-static GBitmap *wt_none;
-static GBitmap *wt_fog;
-static GBitmap *wt_rain;
-static GBitmap *wt_snow;
-static GBitmap *wt_cloud;
-static GBitmap *wt_partly;
-static GBitmap *wt_sun;
-static GBitmap *wt_thunder;
-static GBitmap *wt_wind;
-static TextLayer *s_time_layer;
-static TextLayer *s_date_layer;
-static TextLayer *s_temp_layer;
-static BitmapLayer *s_bitmap_layer;
-static BitmapLayer *battery_charge_image_layer;
-static BitmapLayer *battery_charging_image_layer;
-static BitmapLayer *wt_condition;
-static GFont s_time_font;
-static GFont s_date_font;
-static GFont s_temp_font;
+static GBitmap *s_bitmap, *battery_charge_image, *battery_charging_image;
+static GBitmap *wt_none, *wt_fog, *wt_rain, *wt_snow, *wt_cloud, *wt_partly, *wt_sun, *wt_thunder, *wt_wind;
+static TextLayer *s_time_layer, *s_date_layer, *s_temp_layer;
+static BitmapLayer *s_bitmap_layer, *battery_charge_image_layer, *battery_charging_image_layer, *wt_condition;
+static GFont s_time_font, s_date_font, s_temp_font;
+static Layer *battery_status_layer, *battery_charging_layer;
 static BatteryChargeState old_charge_state;
-static Layer *battery_status_layer;
-static Layer *battery_charging_layer;
 
 char *upcase(char *str) {
 
@@ -52,6 +34,7 @@ void update_battery_display(BatteryChargeState charge_state) {
 
 void battery_status_layer_update(Layer* layer, GContext* ctx) {
 
+	// Fill Battery bar with Green, Yellow, or Red depending on current percentage on Color
 	#ifdef PBL_COLOR
 		if (old_charge_state.charge_percent > 60) {
 			graphics_context_set_fill_color(ctx, GColorScreaminGreen);
@@ -63,11 +46,13 @@ void battery_status_layer_update(Layer* layer, GContext* ctx) {
 			graphics_context_set_fill_color(ctx, GColorRed);
 			graphics_fill_rect(ctx, GRect(0, 0, old_charge_state.charge_percent*14/100, 5), 0, 0);
 		}
+	// Fill Battery bar with White on B/W
 	#else
 		graphics_context_set_fill_color(ctx, GColorWhite);
 		graphics_fill_rect(ctx, GRect(0, 0, old_charge_state.charge_percent*14/100, 5), 0, 0);
 	#endif
 
+	// If the battery is charging, show the charging icon
 	if (old_charge_state.is_charging) {
 		layer_set_hidden(bitmap_layer_get_layer(battery_charging_image_layer), false);
 	} else {
@@ -77,14 +62,17 @@ void battery_status_layer_update(Layer* layer, GContext* ctx) {
 }
 
 static void bt_handler(bool connected) {
+
+	// If bluetooth is not connected, show the not connected image in the weather condition
 	if (!connected) {
 		bitmap_layer_set_bitmap(wt_condition, wt_none);
 	}
+
 }
 
 static void update_time() {
 
-	// Get a tm structure
+	// Create and retrieve a time structure from the curent local time
 	time_t temp = time(NULL);
 	struct tm *tick_time = localtime(&temp);
 
@@ -101,9 +89,10 @@ static void update_time() {
 		strftime(buffer, sizeof("00:00"), "%I:%M", tick_time);
 	}
 
+	// Write the current date into the date buffer
 	strftime(date, sizeof("MON 01 JAN"), "%a %e %b", tick_time);
 
-	// Display this time on the TextLayer
+	// Display this time and date on the TextLayers
 	text_layer_set_text(s_time_layer, buffer);
 	text_layer_set_text(s_date_layer, upcase(date));
 
@@ -111,6 +100,7 @@ static void update_time() {
 
 static void main_window_load(Window *window) {
 
+	// Initialize the window layer
 	Layer *window_layer = window_get_root_layer(window);
 
 	// Create Logo Layer
@@ -126,7 +116,7 @@ static void main_window_load(Window *window) {
 	bitmap_layer_set_alignment(s_bitmap_layer, GAlignCenter);
 	layer_add_child(window_layer, bitmap_layer_get_layer(s_bitmap_layer));
 
-	// Time
+	// Create Time Layer
 	s_time_layer = text_layer_create(GRect(0, 95, 144, 50));
 	text_layer_set_background_color(s_time_layer, GColorClear);
 	text_layer_set_text_color(s_time_layer, GColorWhite);
@@ -139,7 +129,7 @@ static void main_window_load(Window *window) {
 
 	layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_time_layer));
 
-	// Date
+	// Create Date Layer
 	s_date_layer = text_layer_create(GRect(0, 140, 144, 25));
 	text_layer_set_background_color(s_date_layer, GColorClear);
 	#ifdef PBL_COLOR
@@ -156,7 +146,7 @@ static void main_window_load(Window *window) {
 
 	layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_date_layer));
 
-	// Battery Body
+	// Create the Battery Body which will hold the battery charge
 	battery_charge_image = gbitmap_create_with_resource(RESOURCE_ID_BATTERY_BODY);
 
 	battery_charge_image_layer = bitmap_layer_create(GRect(119, 10, 19, 9));
@@ -169,12 +159,12 @@ static void main_window_load(Window *window) {
 	bitmap_layer_set_alignment(battery_charge_image_layer, GAlignCenter);
 	layer_add_child(window_layer, bitmap_layer_get_layer(battery_charge_image_layer));
 
-	// Battery Load
+	// Create the Battery Load which will be written by battery_status_layer_update
 	battery_status_layer = layer_create(GRect(121, 12, 14, 5));
 	layer_add_child(window_get_root_layer(window), battery_status_layer);
 	layer_set_update_proc(battery_status_layer, battery_status_layer_update);
 
-	// Battery Charging Plug
+	// Create the Battery Charging Plug image and hide it by default
 	battery_charging_image = gbitmap_create_with_resource(RESOURCE_ID_BATTERY_CHARGING);
 
 	battery_charging_image_layer = bitmap_layer_create(GRect(107, 9, 10, 11));
@@ -188,7 +178,7 @@ static void main_window_load(Window *window) {
 	layer_set_hidden(bitmap_layer_get_layer(battery_charging_image_layer), true);
 	layer_add_child(window_layer, bitmap_layer_get_layer(battery_charging_image_layer));
 
-	// Weather
+	// Create the Weather bitmaps and fill with disconnected on creation
 	wt_none = gbitmap_create_with_resource(RESOURCE_ID_DISCONNECT);
 	wt_fog = gbitmap_create_with_resource(RESOURCE_ID_WEATHER_FOG);
 	wt_rain = gbitmap_create_with_resource(RESOURCE_ID_WEATHER_RAIN);
@@ -209,26 +199,21 @@ static void main_window_load(Window *window) {
 	bitmap_layer_set_alignment(wt_condition, GAlignCenter);
 	layer_add_child(window_layer, bitmap_layer_get_layer(wt_condition));
 
-	// Temperature
+	// Create the Temperature layer and fill it with 0 degrees on creation
 	s_temp_layer = text_layer_create(GRect(25, 6, 40, 25));
 	text_layer_set_background_color(s_temp_layer, GColorClear);
 	text_layer_set_text_color(s_temp_layer, GColorWhite);
 	text_layer_set_text_alignment(s_temp_layer, GTextAlignmentLeft);
 	text_layer_set_text(s_temp_layer, "0\u00B0");
 
-	// Create second custom font, apply it and add to Window
-	s_temp_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_UBUNTU_BOLD_14));
-	text_layer_set_font(s_temp_layer, s_temp_font);
+	text_layer_set_font(s_temp_layer, s_date_font);
 	layer_add_child(window_layer, text_layer_get_layer(s_temp_layer));
-
-	// Bluetooth Status
-	bt_handler(bluetooth_connection_service_peek());
 
 }
 
 static void main_window_unload(Window *window) {
 
-	// Destroy layers.
+	// Destroy layers
 	layer_destroy(battery_status_layer);
 	layer_destroy(battery_charging_layer);
 	text_layer_destroy(s_time_layer);
@@ -261,6 +246,7 @@ static void main_window_unload(Window *window) {
 
 static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
 
+	// Update the time every tick
 	update_time();
 
 	// Get weather update every 30 minutes
@@ -272,7 +258,7 @@ static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
 		// Add a key-value pair
 		dict_write_uint8(iter, 0, 0);
 
-		// Send the message!
+		// Send the message
 		app_message_outbox_send();
 	}
 
@@ -351,6 +337,7 @@ static void outbox_sent_callback(DictionaryIterator *iterator, void *context) {
 
 static void init() {
 
+	// Create the window with a black background
 	s_main_window = window_create();
 	window_set_fullscreen(s_main_window, true);
 	window_set_background_color(s_main_window, GColorBlack);
@@ -360,7 +347,10 @@ static void init() {
 	});
 
 	window_stack_push(s_main_window, true);
+
+	// Peak at the current battery life and bluetooth status on initialize
 	update_battery_display(battery_state_service_peek());
+	bt_handler(bluetooth_connection_service_peek());
 
 	// Subscribe to bluetooth, battery, and time updates.
 	tick_timer_service_subscribe(MINUTE_UNIT, tick_handler);
@@ -380,6 +370,7 @@ static void init() {
 
 static void deinit() {
 
+	// Destroy window on close
 	window_destroy(s_main_window);
 
 }
