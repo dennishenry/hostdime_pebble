@@ -51,23 +51,26 @@ void update_battery_display(BatteryChargeState charge_state) {
 }
 
 void battery_status_layer_update(Layer* layer, GContext* ctx) {
-
-	if (old_charge_state.charge_percent > 60) {
-		graphics_context_set_fill_color(ctx, GColorScreaminGreen);
+	
+	#ifdef PBL_COLOR
+		if (old_charge_state.charge_percent > 60) {
+			graphics_context_set_fill_color(ctx, GColorScreaminGreen);
+			graphics_fill_rect(ctx, GRect(0, 0, old_charge_state.charge_percent*14/100, 5), 0, 0);
+		} else if (old_charge_state.charge_percent > 30) {
+			graphics_context_set_fill_color(ctx, GColorYellow);
+			graphics_fill_rect(ctx, GRect(0, 0, old_charge_state.charge_percent*14/100, 5), 0, 0);
+		} else {
+			graphics_context_set_fill_color(ctx, GColorRed);
+			graphics_fill_rect(ctx, GRect(0, 0, old_charge_state.charge_percent*14/100, 5), 0, 0);		
+		}
+	#else
+		graphics_context_set_fill_color(ctx, GColorBlack);
 		graphics_fill_rect(ctx, GRect(0, 0, old_charge_state.charge_percent*14/100, 5), 0, 0);
-	} else if (old_charge_state.charge_percent > 30) {
-		graphics_context_set_fill_color(ctx, GColorYellow);
-		graphics_fill_rect(ctx, GRect(0, 0, old_charge_state.charge_percent*14/100, 5), 0, 0);
-	} else {
-		graphics_context_set_fill_color(ctx, GColorRed);
-		graphics_fill_rect(ctx, GRect(0, 0, old_charge_state.charge_percent*14/100, 5), 0, 0);		
-	}
+	#endif
 	
 	if (old_charge_state.is_charging) {
-		APP_LOG(APP_LOG_LEVEL_ERROR, "Battery is now charging");
 		layer_set_hidden(bitmap_layer_get_layer(battery_charging_image_layer), false);
 	} else {
-		APP_LOG(APP_LOG_LEVEL_ERROR, "Battery is now discharging");
 		layer_set_hidden(bitmap_layer_get_layer(battery_charging_image_layer), true);
 	}
 
@@ -115,14 +118,22 @@ static void main_window_load(Window *window) {
 
 	s_bitmap_layer = bitmap_layer_create(GRect(0, 28, 144, 68));
 	bitmap_layer_set_bitmap(s_bitmap_layer, s_bitmap);
-	bitmap_layer_set_compositing_mode(s_bitmap_layer, GCompOpSet);
+	#ifdef PBL_COLOR
+		bitmap_layer_set_compositing_mode(s_bitmap_layer, GCompOpSet);
+	#else
+		bitmap_layer_set_compositing_mode(s_bitmap_layer, GCompOpAssign);
+	#endif
 	bitmap_layer_set_alignment(s_bitmap_layer, GAlignCenter);
 	layer_add_child(window_layer, bitmap_layer_get_layer(s_bitmap_layer));
 
 	// Time
 	s_time_layer = text_layer_create(GRect(0, 100, 144, 50));
 	text_layer_set_background_color(s_time_layer, GColorClear);
-	text_layer_set_text_color(s_time_layer, GColorDarkGray);
+	#ifdef PBL_COLOR
+		text_layer_set_text_color(s_time_layer, GColorDarkGray);
+	#else
+		text_layer_set_text_color(s_time_layer, GColorBlack);
+	#endif
 	text_layer_set_text(s_time_layer, "00:00");
 
 	s_time_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_UBUNTU_REGULAR_36));
@@ -135,7 +146,11 @@ static void main_window_load(Window *window) {
 	// Date
 	s_date_layer = text_layer_create(GRect(0, 136, 144, 25));
 	text_layer_set_background_color(s_date_layer, GColorClear);
-	text_layer_set_text_color(s_date_layer, GColorDarkGray);
+	#ifdef PBL_COLOR
+		text_layer_set_text_color(s_date_layer, GColorDarkGray);
+	#else
+		text_layer_set_text_color(s_date_layer, GColorBlack);
+	#endif
 	text_layer_set_text(s_date_layer, "MON 01 JAN");
 
 	s_date_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_UBUNTU_BOLD_18));
@@ -150,7 +165,11 @@ static void main_window_load(Window *window) {
 	
 	battery_charge_image_layer = bitmap_layer_create(GRect(119, 10, 19, 9));
 	bitmap_layer_set_bitmap(battery_charge_image_layer, battery_charge_image);
-	bitmap_layer_set_compositing_mode(battery_charge_image_layer, GCompOpSet);
+	#ifdef PBL_COLOR
+		bitmap_layer_set_compositing_mode(battery_charge_image_layer, GCompOpSet);
+	#else
+		bitmap_layer_set_compositing_mode(battery_charge_image_layer, GCompOpAssign);
+	#endif
 	bitmap_layer_set_alignment(battery_charge_image_layer, GAlignCenter);
 	layer_add_child(window_layer, bitmap_layer_get_layer(battery_charge_image_layer));
 
@@ -165,7 +184,11 @@ static void main_window_load(Window *window) {
 	battery_charging_image_layer = bitmap_layer_create(GRect(107, 9, 10, 11));
 	bitmap_layer_set_bitmap(battery_charging_image_layer, battery_charging_image);
 	bitmap_layer_set_alignment(battery_charging_image_layer, GAlignCenter);
-	bitmap_layer_set_compositing_mode(battery_charging_image_layer, GCompOpSet);
+	#ifdef PBL_COLOR
+		bitmap_layer_set_compositing_mode(battery_charging_image_layer, GCompOpSet);
+	#else
+		bitmap_layer_set_compositing_mode(battery_charging_image_layer, GCompOpAssign);
+	#endif	
 	layer_set_hidden(bitmap_layer_get_layer(battery_charging_image_layer), true);
 	layer_add_child(window_layer, bitmap_layer_get_layer(battery_charging_image_layer));
 	
@@ -182,14 +205,22 @@ static void main_window_load(Window *window) {
 
 	wt_condition = bitmap_layer_create(GRect(5, 6, 18, 18));
 	bitmap_layer_set_bitmap(wt_condition, wt_none);
-	bitmap_layer_set_compositing_mode(wt_condition, GCompOpSet);
+	#ifdef PBL_COLOR
+		bitmap_layer_set_compositing_mode(wt_condition, GCompOpSet);
+	#else
+		bitmap_layer_set_compositing_mode(wt_condition, GCompOpAssign);
+	#endif	
 	bitmap_layer_set_alignment(wt_condition, GAlignCenter);
 	layer_add_child(window_layer, bitmap_layer_get_layer(wt_condition));
 	
 	// Temperature
 	s_temp_layer = text_layer_create(GRect(25, 6, 40, 25));
 	text_layer_set_background_color(s_temp_layer, GColorClear);
-	text_layer_set_text_color(s_temp_layer, GColorDarkGray);
+	#ifdef PBL_COLOR
+		text_layer_set_text_color(s_temp_layer, GColorDarkGray);
+	#else
+		text_layer_set_text_color(s_temp_layer, GColorBlack);
+	#endif
 	text_layer_set_text_alignment(s_temp_layer, GTextAlignmentLeft);
 	text_layer_set_text(s_temp_layer, "0\u00B0");
 
@@ -287,9 +318,7 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
 	// Display Temperature
 	snprintf(weather_layer_buffer, sizeof(weather_layer_buffer), "%s", temperature_buffer);
 	text_layer_set_text(s_temp_layer, weather_layer_buffer);
-	
-	APP_LOG(APP_LOG_LEVEL_ERROR, "%d is value for conditions", conditions_buffer);
-	
+		
 	if (conditions_buffer >= 200 && conditions_buffer < 300) { // Thunderstorm
 		bitmap_layer_set_bitmap(wt_condition, wt_thunder);
 	} else if (conditions_buffer >= 300 && conditions_buffer < 600) { // Rainy
@@ -332,7 +361,11 @@ static void init() {
 
 	s_main_window = window_create();
 	window_set_fullscreen(s_main_window, true);
-	window_set_background_color(s_main_window, GColorLightGray);
+	#ifdef PBL_COLOR
+		window_set_background_color(s_main_window, GColorLightGray);
+	#else
+		window_set_background_color(s_main_window, GColorWhite);
+	#endif
 	window_set_window_handlers(s_main_window, (WindowHandlers) {
     	.load = main_window_load,
     	.unload = main_window_unload,

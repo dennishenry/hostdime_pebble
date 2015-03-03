@@ -92,6 +92,7 @@
     "sdkVersion": "3",
     "shortName": "HostDime",
     "targetPlatforms": [
+        "aplite",
         "basalt"
     ],
     "uuid": "1733b8f4-b409-4a11-8323-b870834a24d5",
