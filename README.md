@@ -2,7 +2,11 @@
 
 This repository houses the HostDime Pebble Watchface, written in SDK 3.0 and optimized for Pebble Time.
 
-![Current Watchface - 03.03.15](https://raw.githubusercontent.com/dennishenry/hostdime_pebble/master/screenshots/hd_pebble-030315.png)
+
+
+| Basalt (Color) Version        | Aplite (B/W) Version           |
+|:------------:|:-------------:|
+| ![Current Watchface - Basalt - 03.03.15](https://raw.githubusercontent.com/dennishenry/hostdime_pebble/master/screenshots/hd_pebble_basalt-030315.png) | ![Current Watchface - Aplite - 03.03.15](https://raw.githubusercontent.com/dennishenry/hostdime_pebble/master/screenshots/hd_pebble_aplite-030315.png) |
 
 Currently it displays:
 
